@@ -8,7 +8,9 @@
 #define BLOCK_HIGH(id,p,n) ( BLOCK_LOW((id)+1,p,n)-1 ) 
 #define BLOCK_SIZE(id,p,n) (BLOCK_LOW( (id)+1, p, n) -  BLOCK_LOW( (id), p, n  ) )
 #define BLOCK_OWNER(index,p,n) ( ( ((p)*(index)+1)-1 ) / (n) )
-#define DEBUG 1 
+#define DEBUG 0
+#define NORMAL 0
+#define NOTWO 1
 int main (int argc, char *argv[])
 {
    long long int low_value=0,high_value;  
@@ -21,16 +23,16 @@ int main (int argc, char *argv[])
    long long int count=0,global_count=0;
    char *marked; //store the array each process has
    char hostname[MPI_MAX_PROCESSOR_NAME];
-   int len;
-   int rc ;
-   rc = MPI_Init(&argc,&argv);
-   if (rc != MPI_SUCCESS) {
+  // int len;
+  // int rc ;
+    MPI_Init(&argc,&argv);
+  /* if (rc != MPI_SUCCESS) {
 	printf ("Error starting MPI program. Terminating.\n");
 	MPI_Abort(MPI_COMM_WORLD, rc);
     }
+*/
 
-
-   MPI_Get_processor_name(hostname, &len);
+   //MPI_Get_processor_name(hostname, &len);
    //MPI_Init (&argc, &argv);
    MPI_Barrier(MPI_COMM_WORLD);
    double elapsed_time = -MPI_Wtime();
@@ -56,18 +58,23 @@ int main (int argc, char *argv[])
       MPI_Finalize();
       exit(1);
    }
-
+#if NORMAL
    marked = (char*)malloc(size*sizeof(char));
+#endif 
+#if NOTWO
+   marked = (char*)malloc((size/2+1)*sizeof(char));
+#endif
    if (marked == NULL) {
       printf ("Cannot allocate enough memory\n");
       MPI_Finalize();
-      exit (1);
+      exit (2);
    }
    
    
-   for (i = 0; i < size; i++) marked[i] = 0;
+   for (i = 0; i < size/2; i++) marked[i] = 0;
    if (!id) index = 0;
-   long long int  prime = 2;
+   long long int  prime = 3;
+#if NORMAL
    do 
    {
       if (prime * prime > low_value)
@@ -85,20 +92,70 @@ int main (int argc, char *argv[])
       }
       MPI_Bcast (&prime,  1, MPI_INT, 0, MPI_COMM_WORLD);
    } while (prime * prime <= n);
+#endif
+#if NOTWO
+ do
+   {
+      if (prime * prime > low_value)
+      {  
+         
+           first = prime * prime - low_value;//odd
+           first = first /2;//important
+      }
+      else
+      {
+        if (!(low_value % prime))
+	{	
+		if(low_value %2 ==0)
+		 first = (prime -1)/2;
+		else
+		 first = 0;
+	}         
+	else
+	{
+		first = prime - (low_value % prime);
+		if(low_value %2==0)
+		{
+			if(first%2==0)
+				first = first/2+(prime-1)/2;
+			else
+				first = (first-1)/2;
+		}
+		else
+		{
+			if(first %2==0)
+				first = first /2;
+			else
+				first = (first-1)/2+(prime+1)/2;
+		}
+	}
+      }
+      for (i = first; i < size/2; i += prime) marked[i] = 1;
+      if (!id)//process  0
+      {
+         while (marked[++index]);
+         prime = (index*2)+ 3;
+	// printf("prime = %d\n",prime);
+      }
+      MPI_Bcast (&prime,  1, MPI_INT, 0, MPI_COMM_WORLD);
+   } while (prime * prime <= n);
+
+
+#endif
 //----------------------------------------  
    count = 0;
-   for (i = 0; i < size; i++)
+   for (i = 0; i < size/2; i++)
       if (!marked[i]) count++;
    MPI_Reduce (&count, &global_count, 1, MPI_INT, MPI_SUM,0, MPI_COMM_WORLD);
    elapsed_time += MPI_Wtime();
    if (!id) {
-      printf ("%d primes are higher tahn %d  less than or equal to %d\n",count,low_value, high_value);
-      printf ("total %d primes are less than or equal to %d\n",global_count, n);
+      printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
+      printf ("total %lld primes are less than or equal to %lld\n",global_count, n);
       printf ("Total elapsed time: %10.6f\n", elapsed_time);
    }
    else
    {
-       printf ("%d primes are higher tahn %d  less than or equal to %d\n",count,low_value, high_value);
+       printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
         
    }
    MPI_Finalize ();
