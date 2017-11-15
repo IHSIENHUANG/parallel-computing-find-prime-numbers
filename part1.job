@@ -12,6 +12,6 @@ PBS_O_WORKDIR= /home/ihuan010/hw3/parallel-computing-find-prime-numbers
 
 cd $PBS_O_WORKDIR
 
-mpirun ./run_part1 1000 > 32part1.txt
+mpirun ./run_part1 10000000000 > 32part1.txt
 
 
