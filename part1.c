@@ -35,7 +35,6 @@ int main (int argc, char *argv[])
    //MPI_Get_processor_name(hostname, &len);
    //MPI_Init (&argc, &argv);
    MPI_Barrier(MPI_COMM_WORLD);
-   double elapsed_time = -MPI_Wtime();
    MPI_Comm_rank (MPI_COMM_WORLD, &id);
    MPI_Comm_size (MPI_COMM_WORLD, &p);
    if (argc != 2) 
@@ -64,6 +63,8 @@ int main (int argc, char *argv[])
 #if NOTWO
    marked = (char*)malloc((size/2+1)*sizeof(char));
 #endif
+
+   double elapsed_time = -MPI_Wtime();
    if (marked == NULL) {
       printf ("Cannot allocate enough memory\n");
       MPI_Finalize();
@@ -135,7 +136,6 @@ int main (int argc, char *argv[])
       {
          while (marked[++index]);
          prime = (index*2)+ 3;
-	// printf("prime = %d\n",prime);
       }
       MPI_Bcast (&prime,  1, MPI_INT, 0, MPI_COMM_WORLD);
    } while (prime * prime <= n);
@@ -155,7 +155,7 @@ int main (int argc, char *argv[])
    }
    else
    {
-       printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
+   //    printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
         
    }
    MPI_Finalize ();
