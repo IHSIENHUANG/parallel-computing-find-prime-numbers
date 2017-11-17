@@ -80,7 +80,7 @@ int main (int argc, char *argv[])
    MPI_Barrier(MPI_COMM_WORLD);
    MPI_Comm_rank (MPI_COMM_WORLD, &id);
    MPI_Comm_size (MPI_COMM_WORLD, &p);
-   printf("node  is %d \n",p);
+   //printf("node  is %d \n",p);
    if (argc != 2) 
    {
       	if (!id) printf ("Command line: %s <m>\n", argv[0]);
@@ -148,7 +148,7 @@ int main (int argc, char *argv[])
 	    	int round = 0,j ;
 	    	for(round =0;round < 4 ;round ++)
 	    	{
-			for(j=first[round];j<MIN(size/2,i+100);j+=prime[round])
+			for(j=first[round];j<MIN(size/2,i+200);j+=prime[round])
 			{
 				marked[j]=1;			
 			}
@@ -187,7 +187,7 @@ int main (int argc, char *argv[])
    if (!id) {
    //   printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
       printf("part3\n");
-      printf ("part2: total %lld primes node:d  ",global_count+1, p/32);
+      printf ("total %lld primes node:%d  ",global_count+1, p/32);
       printf ("Total elapsed time: %10.6f\n", elapsed_time);
    }
    else
