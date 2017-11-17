@@ -130,7 +130,7 @@ int main (int argc, char *argv[])
    elapsed_time += MPI_Wtime();
    if (!id) {
   //    printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
-      printf ("part2: total %lld primes node:d ",global_count+1, p/32);
+      printf ("part2: \ntotal %lld primes node:%d ",global_count+1, p/32);
       printf ("Total elapsed time: %10.6f\n", elapsed_time);
    }
    else
