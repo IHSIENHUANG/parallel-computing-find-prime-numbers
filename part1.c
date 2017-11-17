@@ -149,8 +149,10 @@ int main (int argc, char *argv[])
    MPI_Reduce (&count, &global_count, 1, MPI_INT, MPI_SUM,0, MPI_COMM_WORLD);
    elapsed_time += MPI_Wtime();
    if (!id) {
-      printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
-      printf ("total %lld primes are less than or equal to %lld\n",global_count, n);
+      //printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
+
+      printf("part1\n");
+      printf ("total %lld primes node:%d  ",global_count+1, p/32);
       printf ("Total elapsed time: %10.6f\n", elapsed_time);
    }
    else
