@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#PBS -l nodes=2:ppn=32,walltime=02:00:00
+#PBS -N run
+#PBS -M ihuan010@ucr.edu
+#PBS -m abe
+
+module load gcc-4.6.2
+module load mvapich2-1.9a2/gnu-4.6.2
+
+PBS_O_WORKDIR= /home/ihuan010/hw3/parallel-computing-find-prime-numbers
+
+cd $PBS_O_WORKDIR
+
+mpirun ./run_part1 10000000000 >> result
+
+
