@@ -80,7 +80,7 @@ int main (int argc, char *argv[])
    MPI_Barrier(MPI_COMM_WORLD);
    MPI_Comm_rank (MPI_COMM_WORLD, &id);
    MPI_Comm_size (MPI_COMM_WORLD, &p);
-
+   printf("node  is %d \n",p);
    if (argc != 2) 
    {
       	if (!id) printf ("Command line: %s <m>\n", argv[0]);
@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
 		first_sezing[i]=prime[i]*prime[i]-2;
 		first_sezing[i]/=2;
 	}     	   
- 	for (i = 0; i < size/2; i += 100)
+ 	for (i = 0; i < size/2; i += 200)
 	{
 	    	int round = 0,j ;
 	    	for(round =0;round < 4 ;round ++)
@@ -159,7 +159,7 @@ int main (int argc, char *argv[])
 	for (i = first_sezing[1]; i < test; i+=prime[1]) marked_prime[i] = 1;
 	for (i = first_sezing[2]; i < test; i+=prime[2]) marked_prime[i] = 1;
 	for (i = first_sezing[3]; i < test; i+=prime[3]) marked_prime[i] = 1;
-        if(prime[0]>10000) 
+        if(prime[0]>100) 
 	{
 	 	cache= 0;
 		 while (marked_prime[++index]);
@@ -185,8 +185,9 @@ int main (int argc, char *argv[])
    MPI_Reduce (&count, &global_count, 1, MPI_INT, MPI_SUM,0, MPI_COMM_WORLD);
    elapsed_time += MPI_Wtime();
    if (!id) {
-      printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
-      printf ("part2: total %lld primes are less than or equal to %lld\n",global_count, n);
+   //   printf ("%lld primes are higher tahn %lld  less than or equal to %lld\n",count,low_value, high_value);
+      printf("part3\n");
+      printf ("part2: total %lld primes node:d  ",global_count+1, p/32);
       printf ("Total elapsed time: %10.6f\n", elapsed_time);
    }
    else
