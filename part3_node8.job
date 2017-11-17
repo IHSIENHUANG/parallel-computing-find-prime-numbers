@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#PBS -l nodes=8:ppn=32,walltime=02:00:00
+#PBS -l nodes=8:ppn=32,walltime=00:05:00
 #PBS -N part3_node8
 #PBS -M ihuan010@ucr.edu
 #PBS -m abe
