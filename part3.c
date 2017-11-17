@@ -114,7 +114,7 @@ int main (int argc, char *argv[])
    for (i = 0 ;i < test;i++) marked_prime[i]=0;
    index = 0;
    double elapsed_time = -MPI_Wtime();
-   int cache = 0;
+   int cache = 1;
    long long int  prime[4];
    prime[0] = 3;
    prime[1] = 5;
@@ -148,19 +148,32 @@ int main (int argc, char *argv[])
 	    	int round = 0,j ;
 	    	for(round =0;round < 4 ;round ++)
 	    	{
-			for(j=first[i];j<MIN(size/2,i+100);j+=prime[i])
+			for(j=first[round];j<MIN(size/2,i+100);j+=prime[round])
 			{
 				marked[j]=1;			
 			}
-			first[i] = j;	
+			first[round] = j;	
 		}
 	}
         for (i = first_sezing[0]; i < test; i+=prime[0]) marked_prime[i] = 1;
 	for (i = first_sezing[1]; i < test; i+=prime[1]) marked_prime[i] = 1;
 	for (i = first_sezing[2]; i < test; i+=prime[2]) marked_prime[i] = 1;
 	for (i = first_sezing[3]; i < test; i+=prime[3]) marked_prime[i] = 1;
- 
-	 cache= 0;
+        if(prime[0]>10000) 
+	{
+	 	cache= 0;
+		 while (marked_prime[++index]);
+                 prime[0] = (index*2)+ 3;
+	}
+	if(cache ==1)
+	{
+
+		for(i = 0 ; i< 4 ; i++)
+         	{
+                    while (marked_prime[++index]);
+                    prime[i] = (index*2)+ 3;
+        	}	
+	}
      }
      // if(id==0) printf("first num = %lld\n",first_sezing); 
    } while (prime[0] * prime[0] <= n);
