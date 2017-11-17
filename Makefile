@@ -4,4 +4,4 @@ all:
 	mpicc part3.c -o run_part3
 
 clean:
-	rm run.e* run.o*  
+	rm run.e* run.o* part*.e* part*.o*
