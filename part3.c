@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 //#include "MyMPI.h"
 #define MIN(a,b)  ((a)<(b)?(a):(b))
 #define BLOCK_LOW(id,p,n)  ((id)*(n)/(p))
@@ -61,7 +62,7 @@ int main (int argc, char *argv[])
    long long int first[4];
    long long int proc0_size;
    int id,p;//p means number of processes
-   long long int i,index;
+   register long long int i,index;
    long long int count=0,global_count=0;
    char *marked; //store the array each process has
    char *marked_prime;// each process own its seiving prime
@@ -112,15 +113,23 @@ int main (int argc, char *argv[])
    
    for (i = 0; i < size/2+1; i++) marked[i] = 0;
    for (i = 0 ;i < test;i++) marked_prime[i]=0;
-   index = 0;
+   //memset(marked,0,(size/2+1) );
+   //memset(marked_prime,0,test);
+
+   index = 5;
+    int round;
+    int j ;
+
    double elapsed_time = -MPI_Wtime();
    int cache = 1;
-   long long int  prime[4];
+   long long int  prime[5];
    prime[0] = 3;
    prime[1] = 5;
    prime[2] = 7;
    prime[3] = 11;
-   long long int first_sezing[4];//for the array of small array 
+   prime[4] =13;
+   
+   long long int first_sezing[5];//for the array of small array 
   do
   {  
      if(cache ==0)//a prime per round 
@@ -137,18 +146,17 @@ int main (int argc, char *argv[])
      }
      else//four prime per round
      {
-	for(i = 0 ; i < 4;i++)
+	for(i = 0 ; i < 5;i++)
 	{
 		first[i] = find_first(prime[i],low_value);
 		first_sezing[i]=prime[i]*prime[i]-2;
 		first_sezing[i]/=2;
 	}     	   
- 	for (i = 0; i < size/2; i += 200)
+ 	for (i = 0; i < size/2; i += 10000)
 	{
-	    	int round = 0,j ;
-	    	for(round =0;round < 4 ;round ++)
+	    	for(round =0;round < 5 ;round ++)
 	    	{
-			for(j=first[round];j<MIN(size/2,i+200);j+=prime[round])
+			for(j=first[round];j<MIN(size/2,i+10000);j+=prime[round])
 			{
 				marked[j]=1;			
 			}
@@ -159,7 +167,8 @@ int main (int argc, char *argv[])
 	for (i = first_sezing[1]; i < test; i+=prime[1]) marked_prime[i] = 1;
 	for (i = first_sezing[2]; i < test; i+=prime[2]) marked_prime[i] = 1;
 	for (i = first_sezing[3]; i < test; i+=prime[3]) marked_prime[i] = 1;
-        if(prime[0]>100) 
+        for (i = first_sezing[4]; i < test; i+=prime[4]) marked_prime[i] = 1;
+        if(prime[0]>2000) 
 	{
 	 	cache= 0;
 		 while (marked_prime[++index]);
@@ -168,7 +177,7 @@ int main (int argc, char *argv[])
 	if(cache ==1)
 	{
 
-		for(i = 0 ; i< 4 ; i++)
+		for(i = 0 ; i< 5 ; i++)
          	{
                     while (marked_prime[++index]);
                     prime[i] = (index*2)+ 3;
